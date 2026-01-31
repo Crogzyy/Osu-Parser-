@@ -168,37 +168,35 @@
         window.onload = renderHistory;
 
         async function parse() {
-            const urlInput = document.getElementById('matchUrl');
-            const url = urlInput.value.trim();
-            if (!url) return;
+    const urlInput = document.getElementById('matchUrl');
+    const url = urlInput.value.trim();
+    if (!url) return;
 
-            document.getElementById('loading').style.display = 'block';
+    document.getElementById('loading').style.display = 'block';
 
-            try {
-                // FIXED: URL updated to point to Netlify Functions
-                const response = await fetch(`/.netlify/functions/getMatch?url=${encodeURIComponent(url)}`);
-                
-                if (!response.ok) {
-                    throw new Error(`Server returned ${response.status}`);
-                }
-
-                const data = await response.json();
-
-                if (data.error) throw new Error(data.error);
-
-                // Add to history and save
-                matchHistory = [data, ...matchHistory.filter(m => m.id !== data.id)];
-                localStorage.setItem('matchHistory', JSON.stringify(matchHistory));
-                
-                urlInput.value = '';
-                renderHistory();
-            } catch (err) {
-                console.error(err);
-                alert("Error: " + err.message);
-            } finally {
-                document.getElementById('loading').style.display = 'none';
-            }
+    try {
+        // Pointing to the Netlify functions folder
+        const response = await fetch(`/.netlify/functions/getMatch?url=${encodeURIComponent(url)}`);
+        
+        // This stops the "Unexpected token <" error
+        if (!response.ok) {
+            throw new Error(`Server returned ${response.status}. Check if your function is deployed.`);
         }
+
+        const data = await response.json();
+        if (data.error) throw new Error(data.error);
+
+        matchHistory = [data, ...matchHistory.filter(m => m.id !== data.id)];
+        localStorage.setItem('matchHistory', JSON.stringify(matchHistory));
+        
+        urlInput.value = '';
+        renderHistory();
+    } catch (err) {
+        alert("Error: " + err.message);
+    } finally {
+        document.getElementById('loading').style.display = 'none';
+    }
+}
 
         function buildPlayerHtml(players) {
             if (!players || players.length === 0) return '<div style="opacity:0.5; font-size:0.8rem;">No Data</div>';
@@ -264,3 +262,4 @@
     </script>
 </body>
 </html>
+
