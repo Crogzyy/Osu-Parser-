@@ -186,7 +186,7 @@
 
             try {
                 // Ensure this fetch path matches your /api/getMatch.js file
-                const response = await fetch(`/api/getMatch?url=${encodeURIComponent(url)}`);
+                const response = await fetch(`/.netlify/functions/getMatch?url=${encodeURIComponent(url)}`);
                 const data = await response.json();
 
                 if (data.error) throw new Error(data.error);
@@ -274,3 +274,4 @@
     </script>
 </body>
 </html>
+
