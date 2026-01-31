@@ -1,0 +1,22 @@
+async function parse() {
+    const url = document.getElementById('matchUrl').value;
+    if (!url) return;
+
+    document.getElementById('loading').style.display = 'block';
+
+    try {
+        const response = await fetch(`/api/getMatchurl=${encodeURIComponent(url)}`);
+        const data = await response.json();
+
+        if (data.error) throw new Error(data.error);
+
+    matchHistory = matchHistory.filter(m => m.id !== data.id);
+            matchHistory.unshift(data);
+            localStorage.setItem('matchHistory', JSON.stringify(matchHistory));
+            renderHistory();
+        } catch (err) {
+            alert("Error parsing match: " + err.message);
+        } finally {
+            document.getElementById('loading').style.display = 'none';
+        }
+    }
